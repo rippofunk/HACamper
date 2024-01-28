@@ -1,0 +1,126 @@
+esphome:
+  name: "batteryheater2"
+  friendly_name: BatteryHeater
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "9j2MO+TaCJnilucfNLHa2YF4Z2G5eUGalJa/2ppY7go="
+
+ota:
+  password: "cb7255e03f1ba2ede449008fdf966797"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # manual_ip:
+  #  static_ip: 192.168.210.84
+  #  gateway: 192.168.210.100
+  #  subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Batteryheater Fallback Hotspot"
+    password: "uLzwWJP1b90p"
+
+captive_portal:
+
+dallas:
+  pin: 
+    number: D1
+    mode: INPUT_PULLUP
+  update_interval: 10s
+
+switch:
+  - platform: gpio
+    pin: D5
+    name: "heater 2"
+    id: heater2
+
+  - platform: gpio
+    pin: D8
+    name: "heater 1"
+    id: heater1
+
+
+output:
+  - platform: esp8266_pwm
+    pin: 
+      number: D7
+    id: heater_fan1
+    frequency: 100 Hz
+    min_power: 0.04
+    zero_means_zero: true
+  - platform: esp8266_pwm
+    pin: 
+      number: D6
+    id: cooling_fans
+    frequency: 25 Hz
+    #min_power: 0.04
+    zero_means_zero: true
+fan:
+  - platform: speed
+    output: heater_fan1
+    name: "heater Fan"
+  - platform: speed
+    output: cooling_fans
+    name: "Circulation Fan"
+    id: circulation_fan
+
+sensor:
+  - platform: dallas
+    address: 0x4e3ce1e380738a28
+    name: "Battery Ambient"
+    id: bambient
+    on_value:
+        then:
+          - lambda: |-
+              if(id(bambient).state > 15) {
+                id(heater1).turn_off();
+                id(heater2).turn_off();
+                ESP_LOGD("heater","AMB says off");}
+              if ((id(heatpad1).state > id(bambient).state + 5) or (id(heatpad2).state > id(bambient).state + 5) ) {
+                id(heater_fan1).turn_on(); 
+                ESP_LOGD("Fan","Fan On");}
+              else if((id(heatpad1).state < id(bambient).state + 4) or (id(heatpad2).state < id(bambient).state + 4) ) {
+                id(heater_fan1).turn_off();
+                ESP_LOGD("Fan","Fan Off");}
+              
+  - platform: dallas
+    address: 0x713ce1e3803c5628
+    name: "Heater Pad 1"
+    id: heatpad1
+    on_value:
+      then:
+        - lambda: |-
+            if ((id(bambient).state < 13) and (id(heatpad1).state < 38)) {
+                id(heater1).turn_on();
+                ESP_LOGD("heater1","HP1 On");}
+            else if((id(bambient).state > 15) or (id(heatpad1).state > 38)) {
+              id(heater1).turn_off();
+              ESP_LOGD("heater","HP1 OFF");}
+  - platform: dallas
+    address: 0x763ce1e3809ef328
+    name: "Heater Pad 2"
+    id: heatpad2
+    on_value:
+      then:
+        - lambda: |-
+            if ((id(bambient).state < 13) and (id(heatpad2).state < 32)) {
+                id(heater2).turn_on();
+                ESP_LOGD("heater2","HP2 On");}
+            else if((id(bambient).state > 15) or (id(heatpad2).state > 32)) {
+              id(heater2).turn_off();
+              ESP_LOGD("heater","HP2 OFF");}
+
+
+# else{id(heater1).turn_off();
+# ESP_LOGD("heater","HP1 OFF end");}
+# bambient should be 15, 24 is just for home testing 

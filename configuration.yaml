@@ -1,0 +1,124 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/card-mod.js
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+modbus: !include modbus.yaml
+template: !include vict.yaml
+
+
+sensor:
+  - platform: integration
+    source: sensor.battery_output_power
+    name: Battery Energy Output Power
+    method: left
+    unit_prefix: k
+    round: 3
+
+  - platform: integration
+    source: sensor.battery_input_power
+    name: Battery Energy Input Power
+    method: left
+    unit_prefix: k
+    round: 3
+    
+  - platform: integration
+    source: sensor.grid_power
+    name: Grid Power Input
+    method: left
+    unit_prefix: k
+    round: 3
+    
+  - platform: integration
+    source: sensor.solar_output_power
+    name: Solar Power
+    method: left
+    unit_prefix: k
+    round: 3
+    
+  - platform: history_stats
+    name: Heat Pad 1 On Time Today
+    entity_id: switch.batteryheater_heater_1_2
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+    
+  - platform: history_stats
+    name: Heat Pad 2 On Time Today
+    entity_id: switch.batteryheater_heater_2_2
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+    
+  - platform: history_stats
+    name: Heat Pad 1 On Time Yesterday
+    entity_id: switch.batteryheater_heater_1_2
+    state: "on"
+    type: time
+    end: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    duration:
+        hours: 24
+    
+  - platform: history_stats
+    name: Heat Pad 2 On Time Yesterday
+    entity_id: switch.batteryheater_heater_2_2
+    state: "on"
+    type: time
+    end: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    duration:
+        hours: 24
+    
+      
+climate:
+  - platform: generic_thermostat
+    name: Camper Heater
+    heater: switch.esptherm_thermostat
+    target_sensor: sensor.electrical_system_cooling_fans_inside_temp
+    max_temp: 80
+    min_cycle_duration:
+      seconds: 30
+    cold_tolerance: 4
+    hot_tolerance: 1
+    initial_hvac_mode: "off"
+    target_temp: 50
+    
+input_number:
+  input_current_slider:
+    name: Multiplus Current Limit - Slider
+    min: 7.5
+    max: 30
+    step: 0.5
+    
+    
+recorder:
+    exclude:
+      entity_globs:
+        - sensor.sun*
+        - weather.*
+      entities:
+        - binary_sensor.fanremote_direction_1
+        - binary_sensor.fanremote_direction_2
+        
+        
+        
+device_tracker:
+  - platform: ddwrt
+    host: 192.168.210.100
+    username: root
+    password: 30Netg28
+    
+    
+
+    
+    
+    

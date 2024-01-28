@@ -1,0 +1,71 @@
+esphome:
+  name: fanremote
+  friendly_name: FanRemote
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "cgZgxGSlPxgaUlWMlX9SnoO0RH8fLw/v5F4o+iBTZ6Y="
+
+ota:
+  password: "736b83007d4afc48bc00496a05bfc0a7"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.210.81
+    gateway: 192.168.210.100
+    subnet: 255.255.255.0
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Fanremote Fallback Hotspot"
+    password: "grukyLMZBoj2"
+
+captive_portal:
+    
+
+switch:
+  - platform: gpio
+    pin: GPIO14
+    name: "switch1"
+    id: switch1
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch1
+
+  - platform: gpio
+    pin: GPIO13
+    name: "switch2"
+    id: switch2
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch2
+
+  - platform: gpio
+    pin: GPIO12
+    name: "switch3"
+    id: switch3
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch3
+
+binary_sensor:
+  - platform: gpio
+    pin: 
+      number: GPIO5
+      mode:
+        input: true
+    name: "Direction 1"
+  - platform: gpio
+    pin: 
+      number: GPIO4
+      mode:
+        input: true
+    name: "Direction 2"

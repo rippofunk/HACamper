@@ -1,0 +1,19 @@
+- id: '1697333711491'
+  alias: Hide Fan Buttons
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.show_hide_fans
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 20
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.show_hide_fans
+  mode: single

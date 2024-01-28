@@ -1,0 +1,220 @@
+# cat modbus.yaml
+
+  - name: "victron"
+    type: tcp
+    host: 192.168.210.95
+    port: 502
+    close_comm_on_error: false
+    timeout: 9
+    retry_on_empty: true
+    retries: 10
+    
+#modbus units
+# multiplus 238
+# solar 100/20 238
+# solar 100/50 237
+# Shunt 239
+    sensors:  
+# Battery
+      - name: "Battery State of Charge"
+        scan_interval: 10
+        unit_of_measurement: "%"
+        slave: 239
+        address: 266
+        scale: 0.1
+        precision: 2
+
+      - name: "Battery Voltage"
+        scan_interval: 10
+        unit_of_measurement: "V DC"
+        slave: 239
+        address: 259
+        scale: 0.01
+        precision: 2
+
+      - name: "Battery Current"
+        scan_interval: 10
+        unit_of_measurement: "A DC"
+        slave: 239
+        address: 261
+        scale: 0.1
+        precision: 2
+      
+      - name: "Consumed Amp Hours"
+        scan_interval: 10
+        unit_of_measurement: "AH"
+        slave: 239
+        address: 265
+        scale: 0.1
+        precision: 2
+    
+# end Battery  
+# start system
+      - name: "Grid Power"
+        device_class: power
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 100
+        address: 820
+ 
+      - name: "PV Power"
+        scan_interval: 10 
+        unit_of_measurement: "W"
+        slave: 100
+        address: 850
+        
+# End System
+
+# Start Multiplus 
+      - name: "Multiplus AC Power Output"
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 100
+        address: 817
+
+      - name: "DC Power"
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 100
+        address: 860
+
+      - name: "Multiplus State"
+        scan_interval: 10
+        unit_of_measurement: "?"
+        slave: 238
+        address: 31
+        
+      - name: "Multiplus Switch Position"
+        scan_interval: 10
+        unit_of_measurement: "?"
+        slave: 238
+        address: 33
+   
+      - name: "Multiplus Output Voltage"
+        scan_interval: 10
+        unit_of_measurement: "V AC"
+        slave: 238
+        address: 15
+        scale: 0.1
+        precision: 2
+    
+      - name: "Multiplus Output Frequency"
+        scan_interval: 10
+        unit_of_measurement: "HZ"
+        slave: 238
+        address: 21
+        scale: 0.01
+        precision: 2
+
+      - name: "Multiplus Input Voltage"
+        scan_interval: 10
+        unit_of_measurement: "V AC"
+        slave: 238
+        address: 3
+        scale: 0.1
+        precision: 2
+    
+      - name: "Multiplus Input Frequency"
+        scan_interval: 10
+        unit_of_measurement: "HZ"
+        slave: 238
+        address: 9
+        scale: 0.01
+        precision: 2
+     
+      - name: "Multiplus Active Input"
+        scan_interval: 10
+        slave: 238
+        address: 29  
+    
+      - name: "Multiplus State of Charge"
+        scan_interval: 10
+        unit_of_measurement: "%"
+        slave: 238
+        address: 30
+    
+      - name: "Multiplus Low Battery Alarm"
+        scan_interval: 10
+        slave: 238
+        address: 35
+    
+      - name: "Multiplus Overload Alarm"
+        scan_interval: 10
+        slave: 238
+        address: 36
+    
+      - name: "Multiplus Battery Temperature"
+        scan_interval: 10
+        unit_of_measurement: "C"
+        slave: 238
+        address: 61
+        
+      - name: "Multiplus Current Limit"
+        scan_interval: 10
+        unit_of_measurement: "A"
+        scale: 0.1
+        slave: 238
+        address: 22
+        precision: 1
+        
+# End multiplus
+
+# Start Solar 237
+      - name: "Solar Charger State"
+        scan_interval: 10
+        slave: 237
+        address: 775
+      
+      - name: "Solar Output Voltage"
+        scan_interval: 10
+        unit_of_measurement: "V DC"
+        slave: 237
+        address: 776
+        scale: 0.01
+        precision: 2
+     
+      - name: "Solar Output Power"
+        device_class: power
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 237
+        address: 789
+        scale: 0.1
+        precision: 2
+    
+      - name: "Solar Max Power Today"
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 237
+        address: 785
+
+# Start Solar 238
+      - name: "Secondary Solar Charger State"
+        scan_interval: 10
+        slave: 238
+        address: 775
+      
+      - name: "Secondary Solar Output Voltage"
+        scan_interval: 10
+        unit_of_measurement: "V DC"
+        slave: 238
+        address: 776
+        scale: 0.01
+        precision: 2
+     
+      - name: "Secondary Solar Output Power"
+        device_class: power
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 238
+        address: 789
+        scale: 0.1
+        precision: 2
+    
+      - name: "Secondary Solar Max Power Today"
+        scan_interval: 10
+        unit_of_measurement: "W"
+        slave: 238
+        address: 785
+
+# end Solar
