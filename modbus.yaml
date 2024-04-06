@@ -4,10 +4,7 @@
     type: tcp
     host: 192.168.210.95
     port: 502
-    close_comm_on_error: false
     timeout: 9
-    retry_on_empty: true
-    retries: 10
     
 #modbus units
 # multiplus 238
